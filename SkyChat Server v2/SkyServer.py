@@ -55,23 +55,22 @@ class SkyChatServerAdmin:
     def handle_client(self, client_socket, address):
         try:
             username = client_socket.recv(1024).decode("utf-8")
-            self.log_box.insert(tk.END, f"User {username} connected from {address[0]}:{address[1]}\n")
-            self.log_box.insert(tk.END, f"User's IP address: {address[0]}\n")  # Show user's IP to admin
+            self.log_box.insert(tk.END, f"User {username} connected.\n")
             while True:
                 data = client_socket.recv(1024)
                 if not data:
                     break
                 message = data.decode("utf-8")
-                self.log_box.insert(tk.END, f"{username} ({address[0]}:{address[1]}): {message}\n")
+                self.log_box.insert(tk.END, f"{username}: {message}\n")
                 self.handle_command(message)
-                self.broadcast_message(f"{username} ({address[0]}:{address[1]}): {message}")
+                self.broadcast_message(f"{username}: {message}")
         except Exception as e:
             print(f"Error occurred: {e}")
         finally:
             client_socket.close()
             del self.client_addresses[client_socket]
             self.clients.remove(client_socket)
-            self.log_box.insert(tk.END, f"Connection with {username} from {address[0]}:{address[1]} closed.\n")
+            self.log_box.insert(tk.END, f"Connection with {username} closed.\n")
 
     def handle_command(self, message):
         command_pattern = re.compile(r"--(\w+)(?:\s\"([\d\.]+)\")?")
